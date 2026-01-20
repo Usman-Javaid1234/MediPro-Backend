@@ -31,9 +31,11 @@ async def get_current_user_id(
         InvalidTokenException: If token is invalid or expired
     """
     token = credentials.credentials
+    print(f"DEBUG [get_current_user_id]: Token received (first 20 chars): {token[:20]}...")
     
     # Verify Supabase token
     payload = verify_supabase_token(token)
+    print(f"DEBUG [get_current_user_id]: Payload: {payload}")
     
     if payload is None:
         raise InvalidTokenException()
@@ -65,17 +67,26 @@ async def get_current_user(
     Raises:
         UnauthorizedException: If user not found or inactive
     """
-    result = await db.execute(
-        select(User).where(User.id == user_id)
-    )
-    user = result.scalar_one_or_none()
+    print(f"DEBUG [get_current_user]: Looking up user_id: {user_id}")
+    try:
+        result = await db.execute(
+            select(User).where(User.id == user_id)
+        )
+        user = result.scalar_one_or_none()
+        print(f"DEBUG [get_current_user]: Query executed, user result: {user}")
+    except Exception as e:
+        print(f"DEBUG [get_current_user]: Database error: {type(e).__name__}: {str(e)}")
+        raise UnauthorizedException(detail="Database error")
     
     if user is None:
+        print(f"DEBUG [get_current_user]: User not found in database")
         raise UnauthorizedException(detail="User not found")
     
     if not user.is_active:
+        print(f"DEBUG [get_current_user]: User {user.email} is inactive")
         raise UnauthorizedException(detail="User account is inactive")
     
+    print(f"DEBUG [get_current_user]: User found: {user.email} | is_admin: {user.is_admin} | is_active: {user.is_active}")
     return user
 
 
@@ -115,6 +126,9 @@ async def get_current_admin_user(
     Raises:
         ForbiddenException: If user is not an admin
     """
+    # Debug logging
+    print(f"DEBUG: User {current_user.email} | ID: {current_user.id} | is_admin: {current_user.is_admin}")
+    
     if not current_user.is_admin:
         raise ForbiddenException(detail="Admin privileges required")
     

@@ -94,10 +94,10 @@ def decode_token(token: str) -> Optional[Dict[str, Any]]:
 
 def verify_supabase_token(token: str) -> Optional[Dict[str, Any]]:
     """
-    Verify a Supabase JWT token
+    Verify a JWT token (using app's SECRET_KEY)
     
     Args:
-        token: Supabase JWT token
+        token: JWT token
     
     Returns:
         Decoded token payload or None if invalid
@@ -105,9 +105,8 @@ def verify_supabase_token(token: str) -> Optional[Dict[str, Any]]:
     try:
         payload = jwt.decode(
             token,
-            settings.SUPABASE_JWT_SECRET,
-            algorithms=[settings.ALGORITHM],
-            options={"verify_aud": False}  # Supabase tokens don't have audience
+            settings.SECRET_KEY,  # Use SECRET_KEY since we create tokens with it
+            algorithms=[settings.ALGORITHM]
         )
         return payload
     except JWTError:

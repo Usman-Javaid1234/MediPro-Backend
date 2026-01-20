@@ -35,6 +35,7 @@ async def get_dashboard_stats(
     
     Returns summary stats for users, products, orders, revenue
     """
+    print("DEBUG [get_dashboard_stats]: Endpoint reached!")
     admin_service = AdminService(db)
     return await admin_service.get_dashboard_stats()
 

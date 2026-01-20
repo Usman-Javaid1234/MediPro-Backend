@@ -122,7 +122,8 @@ class AuthService:
                 "id": str(user.id),
                 "email": user.email,
                 "full_name": user.full_name,
-                "phone": user.phone
+                "phone": user.phone,
+                "is_admin": user.is_admin
             },
             "session": {
                 "access_token": access_token,

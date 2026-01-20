@@ -96,7 +96,10 @@ class CategoryService:
         search: Optional[str] = None
     ) -> CategoryListResponse:
         """Get paginated list of categories"""
-        query = select(Category)
+        query = select(Category).options(
+            selectinload(Category.products),
+            selectinload(Category.subcategories)
+        )
         
         # Apply filters
         if parent_id is not None:
